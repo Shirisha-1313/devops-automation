@@ -1,0 +1,31 @@
+pipeline {
+    agent any
+    tools{
+        maven 'maven3'
+    }
+    stages{
+        stage('Build Maven'){
+            steps{
+                checkout scmGit(branches: [[name: '*/main']], extensions: [], userRemoteConfigs: [[url: 'https://github.com/9182029380/springboot-docker-jenkins']])
+                bat 'mvn clean install'
+            }
+        }
+        stage('Build docker image'){
+            steps{
+                script{
+                    bat 'docker build -t sharath198/springbootapplication .'
+                }
+            }
+        }
+        stage('Push image to Hub'){
+            steps{
+                script{
+                   
+                   bat 'docker login -u sharath198 -p Sharath@198'
+
+                   bat 'docker push sharath198/springbootapplication'
+                }
+            }
+        }
+    }
+}
